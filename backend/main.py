@@ -9,14 +9,15 @@ import time
 
 # --- CONFIG ---
 POSTGRES_URL = os.getenv("POSTGRES_URL", "postgresql://readonly:readonly@localhost:5432/yourdb")
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "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")
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openrouter/openai/gpt-3.5-turbo")
+POSTGRES_URL = os.getenv("POSTGRES_URL", "postgresql://neondb_owner:npg_dqzr74xNCRsy@ep-lucky-math-a4419tz3-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "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")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-3.5-turbo")
 
 # --- FASTAPI APP ---
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5500", "http://127.0.0.1:5500"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,7 +42,19 @@ class QueryResponse(BaseModel):
 
 # --- SYSTEM PROMPTS ---
 SQL_GEN_PROMPT = """
-You are a SQL expert. Given the following database schema, generate a safe, deterministic, and correct SQL SELECT query (no SELECT *, no modifications, always LIMIT 100) for the user's question. Use only the provided schema. Output only the SQL.
+You are a SQL expert. Given the following database schema, generate a safe, deterministic, and correct SQL SELECT query (no SELECT *, no modifications, always LIMIT 100) for the user's question.
+
+Rules:
+- Use only the provided schema.
+- Output only the SQL (no markdown, no explanation).
+- Always use clear, consistent table aliases (e.g., c for customers, pr for products, pu for purchases).
+- Do not invent or use undefined aliases. Only use aliases you define in the FROM or JOIN clauses.
+- Do not use the same alias for different tables.
+- Only SELECT queries, no modifications.
+- No SELECT *.
+- Always apply LIMIT 100.
+- If the user asks for multiple fields or aggregations (e.g., product name and count), always include all requested fields and aggregations in the SELECT clause and result.
+
 Schema:
 {schema}
 Question: {question}
@@ -60,8 +73,10 @@ Rows: {rows}
 """
 
 # --- SCHEMA LOADER ---
+from sqlalchemy import inspect
+
 def load_schema():
-    inspector = engine.inspect(engine)
+    inspector = inspect(engine)
     schema = ""
     for table in inspector.get_table_names():
         schema += f"Table: {table}\n"
@@ -85,7 +100,11 @@ def call_openai(prompt, temperature=0):
         "max_tokens": 512
     }
     resp = requests.post(url, headers=headers, json=payload, timeout=30)
-    resp.raise_for_status()
+    try:
+        resp.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        print("OpenRouter API error:", resp.status_code, resp.text)
+        raise HTTPException(status_code=500, detail=f"OpenRouter API error: {resp.status_code} {resp.text}")
     data = resp.json()
     return data["choices"][0]["message"]["content"].strip()
 
@@ -104,6 +123,12 @@ def query(request: QueryRequest):
     # Step 1: NL → SQL
     sql_prompt = SQL_GEN_PROMPT.format(schema=schema, question=request.question)
     sql = call_openai(sql_prompt)
+    # Remove markdown code fences if present
+    if sql.strip().startswith('```'):
+        sql = sql.strip().lstrip('`').split('\n', 1)[-1]
+        if sql.endswith('```'):
+            sql = sql.rsplit('```', 1)[0]
+        sql = sql.strip()
     # Step 2: SQL Safety
     if not is_sql_safe(sql):
         raise HTTPException(status_code=400, detail="Unsafe or invalid SQL generated.")
@@ -117,11 +142,12 @@ def query(request: QueryRequest):
         with engine.connect() as conn:
             start = time.time()
             result = conn.execute(text(sql))
-            rows = [dict(r) for r in result]
+            rows = [dict(r._mapping) for r in result]
             if time.time() - start > 5:
                 raise HTTPException(status_code=408, detail="Query timeout.")
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=400, detail="SQL execution error.")
+        print("SQL execution error:", str(e))
+        raise HTTPException(status_code=400, detail=f"SQL execution error: {str(e)}")
     # Step 5: Data Verification
     ver_prompt = DATA_VERIFICATION_PROMPT.format(question=request.question, sql=sql, rows=rows[:5])
     ver_response = call_openai(ver_prompt)

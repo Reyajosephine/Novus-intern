@@ -33,11 +33,23 @@ function renderResults(data) {
   resultsTable.innerHTML = `<thead>${thead}</thead><tbody>${tbody}</tbody>`;
 }
 
-function renderVerification(verification) {
+function renderVerification(verification, data) {
   statusBadge.textContent = verification.status.charAt(0).toUpperCase() + verification.status.slice(1);
   statusBadge.className = "badge " + verification.status;
   confidence.textContent = `Confidence: ${verification.confidence.toFixed(2)}`;
   explanation.textContent = verification.reason;
+  // Render relevant data table in verification panel
+  const container = document.getElementById("verification-data-table-container");
+  if (!data || data.length === 0) {
+    container.innerHTML = "<div class='empty-state'>No relevant data.</div>";
+    return;
+  }
+  const headers = Object.keys(data[0]);
+  let thead = "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+  let tbody = data.map(row =>
+    "<tr>" + headers.map(h => `<td>${row[h]}</td>`).join("") + "</tr>"
+  ).join("");
+  container.innerHTML = `<table class='verification-data-table'><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
 }
 
 function renderError(msg) {
@@ -59,6 +71,7 @@ runBtn.addEventListener("click", async () => {
   statusBadge.className = "badge";
   confidence.textContent = "";
   explanation.textContent = "";
+  document.getElementById("verification-data-table-container").innerHTML = "";
   try {
     const res = await fetch(apiUrl, {
       method: "POST",
@@ -72,7 +85,7 @@ runBtn.addEventListener("click", async () => {
     const { sql, data, verification } = await res.json();
     renderSQL(sql);
     renderResults(data);
-    renderVerification(verification);
+    renderVerification(verification, data);
   } catch (e) {
     renderError(e.message);
   } finally {
