@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI SQL Agent</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>AI SQL Agent</h1>
+    <p class="subtitle">Natural language to verified data</p>
+  </header>
+  <main>
+    <section class="query-section">
+      <textarea id="question" placeholder="Ask your data..."></textarea>
+      <button id="run-btn">Run Query</button>
+      <div id="loading" class="spinner" style="display:none;"></div>
+    </section>
+    <section class="sql-section">
+      <h2>Generated SQL</h2>
+      <pre id="sql-block" class="sql-block" readonly></pre>
+    </section>
+    <section class="results-section">
+      <h2>Results</h2>
+      <div id="results-table-container">
+        <table id="results-table"></table>
+      </div>
+      <div id="results-empty" class="empty-state"></div>
+    </section>
+    <section class="verification-section">
+      <h2>Verification</h2>
+      <div id="verification-panel">
+        <span id="status-badge" class="badge">-</span>
+        <span id="confidence"></span>
+        <div id="explanation"></div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    Secure read-only SQL execution
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
