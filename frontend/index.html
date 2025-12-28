@@ -1,31 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI SQL Agent</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <header>
-    <div class="logo-row">
-      <img src="assets/Novus-logo.png" alt="Novus Solutions Logo" class="novus-logo" />
-      <div class="header-title-group">
-        <h1>NAI SQL Agent</h1>
-        <p class="subtitle">Natural language to verified data</p>
-      </div>
-    </div>
+
+  <!-- PLAIN HEADER / INTRO -->
+  <header class="plain-header">
+    <img
+      src="assets/Novus-logo.png"
+      alt="Novus Solutions Logo"
+      class="novus-logo"
+    />
+    <h1>AI SQL Agent</h1>
+    <p class="subtitle">Natural language to verified data</p>
   </header>
+
+  <!-- MAIN CONTENT -->
   <main>
     <section class="query-section">
       <textarea id="question" placeholder="Ask your data..."></textarea>
       <button id="run-btn">Run Query</button>
       <div id="loading" class="spinner" style="display:none;"></div>
     </section>
+
     <section class="sql-section">
       <h2>Generated SQL</h2>
       <pre id="sql-block" class="sql-block" readonly></pre>
     </section>
+
     <section class="results-section">
       <h2>Results</h2>
       <div id="results-table-container">
@@ -33,6 +40,7 @@
       </div>
       <div id="results-empty" class="empty-state"></div>
     </section>
+
     <section class="verification-section">
       <h2>Verification</h2>
       <div id="verification-panel">
@@ -43,11 +51,12 @@
       </div>
     </section>
   </main>
+
+  <!-- FOOTER -->
   <footer>
     Secure read-only SQL execution
   </footer>
+
   <script src="app.js"></script>
 </body>
 </html>
-
-

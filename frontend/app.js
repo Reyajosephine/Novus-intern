@@ -21,7 +21,7 @@ function renderSQL(sql) {
 function renderResults(data) {
   if (!data || data.length === 0) {
     resultsTable.innerHTML = "";
-    resultsEmpty.textContent = "No results.";
+    resultsEmpty.textContent = "Fetching data...";
     return;
   }
   resultsEmpty.textContent = "";
