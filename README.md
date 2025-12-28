@@ -82,9 +82,23 @@ Neon provides a scalable, serverless PostgreSQL environment that is well-suited 
   - Confidence score
   - Human-readable explanation
 
-**Example:**  
+**Example 1:**  
 Input → *“Total sales count”*  
 Output → SQL query, numerical result, and verification summary shown instantly.
+
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/d22bebb8-5a34-4927-8327-2dd42bc05aae" />
+<img width="1919" height="358" alt="image" src="https://github.com/user-attachments/assets/b4b5319a-3a6f-4d03-8aef-8b22c5a4a72d" />
+
+
+
+**Example 1:**  
+Input → *“List all products”*  
+Output → SQL query, numerical result, and verification summary shown instantly.
+
+<img width="1919" height="1090" alt="image" src="https://github.com/user-attachments/assets/d9c9849d-184f-42d8-9c9c-ee1601435580" />
+<img width="1919" height="409" alt="image" src="https://github.com/user-attachments/assets/b9f9699a-396c-49a3-a773-a86df2346b6f" />
+
+
 
 ---
 
