@@ -46,6 +46,10 @@ This project delivers a production-ready **AI-powered SQL agent system** that al
 
 Neon provides a scalable, serverless PostgreSQL environment that is well-suited for cloud-native and AI-driven applications.
 
+![HACK-A-CLOUD](https://github.com/user-attachments/assets/04977372-80a0-4721-b660-eaa98ca081fb)
+
+
+
 ---
 
 ## 🧰 Tech Stack
