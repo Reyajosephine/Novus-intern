@@ -10,7 +10,7 @@ import time
 # --- CONFIG ---
 POSTGRES_URL = os.getenv("POSTGRES_URL", "postgresql://readonly:readonly@localhost:5432/yourdb")
 POSTGRES_URL = os.getenv("POSTGRES_URL", "postgresql://neondb_owner:npg_dqzr74xNCRsy@ep-lucky-math-a4419tz3-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "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")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "sk-or-.........................")
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-3.5-turbo")
 
 # --- FASTAPI APP ---
